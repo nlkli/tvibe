@@ -58,13 +58,13 @@ impl Color {
         )
     }
 
-    pub fn from_hex(hex: u32) -> Self {
-        let r = ((hex >> 24) & 0xff) as f32 / 255.0;
-        let g = ((hex >> 16) & 0xff) as f32 / 255.0;
-        let b = ((hex >> 8) & 0xff) as f32 / 255.0;
-        let a = (hex & 0xff) as f32 / 255.0;
-        Self::new(r, g, b, a)
-    }
+    // pub fn from_hex(hex: u32) -> Self {
+    //     let r = ((hex >> 24) & 0xff) as f32 / 255.0;
+    //     let g = ((hex >> 16) & 0xff) as f32 / 255.0;
+    //     let b = ((hex >> 8) & 0xff) as f32 / 255.0;
+    //     let a = (hex & 0xff) as f32 / 255.0;
+    //     Self::new(r, g, b, a)
+    // }
 
     pub fn from_hsv(h: f32, s: f32, v: f32, a: f32) -> Self {
         let h = h.rem_euclid(360.0);
@@ -79,29 +79,29 @@ impl Color {
         Self::new(f(5.0), f(3.0), f(1.0), a)
     }
 
-    pub fn from_hsl(h: f32, s: f32, l: f32, a: f32) -> Self {
-        let h = h.rem_euclid(360.0);
-        let s = clamp(s, 0.0, 100.0) / 100.0;
-        let l = clamp(l, 0.0, 100.0) / 100.0;
+    // pub fn from_hsl(h: f32, s: f32, l: f32, a: f32) -> Self {
+    //     let h = h.rem_euclid(360.0);
+    //     let s = clamp(s, 0.0, 100.0) / 100.0;
+    //     let l = clamp(l, 0.0, 100.0) / 100.0;
 
-        let a2 = s * l.min(1.0 - l);
+    //     let a2 = s * l.min(1.0 - l);
 
-        let f = |n: f32| {
-            let k = (n + h / 30.0).rem_euclid(12.0);
-            l - a2 * (k - 3.0).min(9.0 - k).min(1.0).max(-1.0)
-        };
+    //     let f = |n: f32| {
+    //         let k = (n + h / 30.0).rem_euclid(12.0);
+    //         l - a2 * (k - 3.0).min(9.0 - k).min(1.0).max(-1.0)
+    //     };
 
-        Self::new(f(0.0), f(8.0), f(4.0), a)
-    }
+    //     Self::new(f(0.0), f(8.0), f(4.0), a)
+    // }
 
-    pub fn to_rgba(&self) -> (u8, u8, u8, f32) {
-        (
-            round_u8(self.red * 255.0),
-            round_u8(self.green * 255.0),
-            round_u8(self.blue * 255.0),
-            self.alpha,
-        )
-    }
+    // pub fn to_rgba(&self) -> (u8, u8, u8, f32) {
+    //     (
+    //         round_u8(self.red * 255.0),
+    //         round_u8(self.green * 255.0),
+    //         round_u8(self.blue * 255.0),
+    //         self.alpha,
+    //     )
+    // }
 
     pub fn to_hex(&self, with_alpha: bool) -> u32 {
         let r = round_u8(self.red * 255.0) as u32;
@@ -148,21 +148,21 @@ impl Color {
         (h, s * 100.0, max * 100.0)
     }
 
-    pub fn to_hsl(&self) -> (f32, f32, f32) {
-        let max = self.red.max(self.green).max(self.blue);
-        let min = self.red.min(self.green).min(self.blue);
-        let l = (max + min) / 2.0;
+    // pub fn to_hsl(&self) -> (f32, f32, f32) {
+    //     let max = self.red.max(self.green).max(self.blue);
+    //     let min = self.red.min(self.green).min(self.blue);
+    //     let l = (max + min) / 2.0;
 
-        let delta = max - min;
-        let s = if delta == 0.0 {
-            0.0
-        } else {
-            delta / (1.0 - (2.0 * l - 1.0).abs())
-        };
+    //     let delta = max - min;
+    //     let s = if delta == 0.0 {
+    //         0.0
+    //     } else {
+    //         delta / (1.0 - (2.0 * l - 1.0).abs())
+    //     };
 
-        let h = self.to_hsv().0;
-        (h, s * 100.0, l * 100.0)
-    }
+    //     let h = self.to_hsv().0;
+    //     (h, s * 100.0, l * 100.0)
+    // }
 
     pub fn blend(&self, other: &Color, f: f32) -> Color {
         Color::new(
@@ -190,32 +190,32 @@ impl Color {
         Color::from_hsv(h, s, clamp(val + v, 0.0, 100.0), self.alpha)
     }
 
-    pub fn lighten(&self, v: f32) -> Color {
-        let (h, s, l) = self.to_hsl();
-        Color::from_hsl(h, s, clamp(l + v, 0.0, 100.0), self.alpha)
-    }
+    // pub fn lighten(&self, v: f32) -> Color {
+    //     let (h, s, l) = self.to_hsl();
+    //     Color::from_hsl(h, s, clamp(l + v, 0.0, 100.0), self.alpha)
+    // }
 
-    pub fn saturate(&self, v: f32) -> Color {
-        let (h, s, val) = self.to_hsv();
-        Color::from_hsv(h, clamp(s + v, 0.0, 100.0), val, self.alpha)
-    }
+    // pub fn saturate(&self, v: f32) -> Color {
+    //     let (h, s, val) = self.to_hsv();
+    //     Color::from_hsv(h, clamp(s + v, 0.0, 100.0), val, self.alpha)
+    // }
 
-    pub fn rotate(&self, v: f32) -> Color {
-        let (h, s, val) = self.to_hsv();
-        Color::from_hsv((h + v).rem_euclid(360.0), s, val, self.alpha)
-    }
+    // pub fn rotate(&self, v: f32) -> Color {
+    //     let (h, s, val) = self.to_hsv();
+    //     Color::from_hsv((h + v).rem_euclid(360.0), s, val, self.alpha)
+    // }
 
-    pub fn luminance(&self) -> f32 {
-        let f = |c: f32| {
-            if c > 0.04045 {
-                ((c + 0.055) / 1.055).powf(2.4)
-            } else {
-                c / 12.92
-            }
-        };
+    // pub fn luminance(&self) -> f32 {
+    //     let f = |c: f32| {
+    //         if c > 0.04045 {
+    //             ((c + 0.055) / 1.055).powf(2.4)
+    //         } else {
+    //             c / 12.92
+    //         }
+    //     };
 
-        0.2126 * f(self.red) + 0.7152 * f(self.green) + 0.0722 * f(self.blue)
-    }
+    //     0.2126 * f(self.red) + 0.7152 * f(self.green) + 0.0722 * f(self.blue)
+    // }
 }
 
 impl std::fmt::Display for Color {

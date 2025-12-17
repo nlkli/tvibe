@@ -374,9 +374,9 @@ impl Theme {
         self.colors.get_or_insert(Default::default())
     }
 
-    pub fn get_config(&mut self) -> &ThemeConfig {
-        self.config.get_or_insert(Default::default())
-    }
+    // pub fn get_config(&mut self) -> &ThemeConfig {
+    //     self.config.get_or_insert(Default::default())
+    // }
 
     pub fn is_light(&mut self) -> bool {
         *self.light.get_or_insert(Default::default())

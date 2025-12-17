@@ -2,72 +2,77 @@ use crate::models::*;
 use rand::seq::IndexedRandom;
 use strsim::levenshtein;
 
-pub const LIST: [&str; 49] = [
-    "base16_default_dark",
+pub const LIST: [&str; 56] = [
     "ashes_dark",
     "ashes_light",
     "autumn",
+    "base16_dark",
+    "chicago95",
+    "dayfox",
+    "duskfox",
     "github_dark",
+    "github_dark_tritanopia",
     "github_light",
-    "vscode_dark_plus",
-    "vesper",
+    "google",
+    "gotham",
+    "gruber_darker",
+    "gruvbox_dark",
+    "gruvbox_light",
+    "gruvbox_material_hard_dark",
+    "gruvbox_material_hard_light",
+    "gruvbox_material_medium_dark",
+    "gruvbox_material_medium_light",
+    "hardhacker",
+    "high_contrast",
+    "horizon_dark",
+    "hyper",
+    "iceberg",
+    "iris",
+    "iterm2",
+    "kanagawa_dragon",
+    "kanagawa_wave",
+    "kimbie_dark",
+    "kimbie_light",
+    "kitty",
+    "konsole_port",
+    "low_contrast",
+    "marine_dark",
+    "meliora",
+    "miasma",
+    "midnight_haze",
+    "monokai",
+    "monokai_charcoal",
+    "monokai_pro",
+    "moonfly",
+    "neobones_dark",
+    "neobones_light",
+    "night_owl",
+    "nightfox",
+    "nordfox",
+    "paper",
+    "rose_pine",
+    "rose_pine_dawn",
+    "terafox",
+    "tokyo_night",
     "ubuntu",
-    "tokyo_night",
-    "rose_pine_dawn",
-    "rose_pine",
-    "google",
-    "gotham",
-    "gruber_darker",
-    "gruvbox_dark",
-    "gruvbox_light",
-    "gruvbox_material_dark_medium",
-    "gruvbox_material_hard_dark",
-    "gruvbox_material_hard_light",
-    "gruvbox_material_medium_dark",
-    "gruvbox_material_medium_light",
-    "hardhacker",
-    "high_contrast",
-    "horizon_dark",
-    "hyper",
-    "iceberg",
-    "iris",
-    "iterm2",
-    "kanagawa_dragon",
-    "kanagawa_wave",
-    "kimbie_dark",
-    "kimbie_light",
-    "kitty",
-    "konsole_port",
-    "low_contrast",
-    "marine_dark",
-    "meliora",
-    "miasma",
-    "midnight_haze",
-    "monokai",
-    "monokai_charcoal",
-    "monokai_pro",
-    "moonfly",
-    "night_owl",
-    "paper",
-    "duskfox",
-    "dayfox",
-    "terafox",
+    "vesper",
+    "vscode_dark_plus",
+    "xcode_dark",
+    "xcode_light",
 ];
 
-pub const DARK_LIST: [&str; 39] = [
-    "base16_default_dark",
+pub const DARK_LIST: [&str; 44] = [
     "ashes_dark",
     "autumn",
+    "base16_dark",
+    "chicago95",
+    "duskfox",
     "github_dark",
-    "vscode_dark_plus",
-    "vesper",
-    "tokyo_night",
-    "rose_pine",
+    "github_dark_tritanopia",
     "google",
     "gotham",
     "gruber_darker",
     "gruvbox_dark",
-    "gruvbox_material_dark_medium",
     "gruvbox_material_hard_dark",
     "gruvbox_material_medium_dark",
     "hardhacker",
@@ -91,25 +96,44 @@ pub const DARK_LIST: [&str; 39] = [
     "monokai_charcoal",
     "monokai_pro",
     "moonfly",
+    "neobones_dark",
     "night_owl",
-    "duskfox",
+    "nightfox",
+    "nordfox",
+    "rose_pine",
     "terafox",
+    "tokyo_night",
+    "vesper",
+    "vscode_dark_plus",
+    "xcode_dark",
 ];
 
-pub const LIGHT_LIST: [&str; 9] = [
+pub const LIGHT_LIST: [&str; 11] = [
     "ashes_light",
+    "dayfox",
     "github_light",
-    "rose_pine_dawn",
     "gruvbox_light",
     "gruvbox_material_hard_light",
     "gruvbox_material_medium_light",
     "kimbie_light",
+    "neobones_light",
     "paper",
-    "dayfox",
+    "rose_pine_dawn",
+    "xcode_light",
 ];
 
 pub fn rand() -> Theme {
     let name = LIST.choose(&mut rand::rng());
+    by_name(*name.unwrap_or(&LIST[0]))
+}
+
+pub fn rand_light() -> Theme {
+    let name = LIGHT_LIST.choose(&mut rand::rng());
+    by_name(*name.unwrap_or(&LIST[0]))
+}
+
+pub fn rand_dark() -> Theme {
+    let name = DARK_LIST.choose(&mut rand::rng());
     by_name(*name.unwrap_or(&LIST[0]))
 }
 
@@ -127,11 +151,13 @@ pub fn search(query: &str) -> Theme {
         }
     };
 
-    let dark = DARK_LIST.iter()
+    let dark = DARK_LIST
+        .iter()
         .min_by_key(|&&s| score(s))
         .unwrap_or(&DARK_LIST[0]);
 
-    let light = LIGHT_LIST.iter()
+    let light = LIGHT_LIST
+        .iter()
         .min_by_key(|&&s| score(s))
         .unwrap_or(&LIGHT_LIST[0]);
 
@@ -180,7 +206,127 @@ fn new_term_colors(
 
 pub fn by_name(name: &str) -> Theme {
     match name {
+        "nightfox" => Theme {
+            // OK
+            name: Some("nightfox".into()),
+            light: Some(true),
+            colors: Some(ThemeColors {
+                base: TermColors {
+                    black: "#393b44".into(),
+                    red: "#c94f6d".into(),
+                    green: "#81b29a".into(),
+                    yellow: "#dbc074".into(),
+                    blue: "#719cd6".into(),
+                    magenta: "#9d79d6".into(),
+                    cyan: "#63cdcf".into(),
+                    white: "#dfdfe0".into(),
+                    orange: Some("#f4a261".into()),
+                    pink: Some("#d67ad2".into()),
+                },
+                bright: None,
+                dim: None,
+                comment: Some("#738091".into()),
+                variable: Some("#dfdfe0".into()),
+                status_line: None,
+                background: Background::Colors([
+                    "#131a24".into(),
+                    "#192330".into(),
+                    "#212e3f".into(),
+                    "#29394f".into(),
+                    "#39506d".into(),
+                ]),
+                foreground: Foreground::Colors([
+                    "#d6d6d7".into(),
+                    "#cdcecf".into(),
+                    "#aeafb0".into(),
+                    "#71839b".into(),
+                ]),
+                selection: Selection::Colors(["#2b3b51".into(), "#3c5372".into()]),
+                diff: None,
+            }),
+            config: Some(ThemeConfig {
+                shade_factor: Some(0.15),
+                diff_blend: Some(DiffBlendConfig {
+                    add: 0.15,
+                    delete: 0.15,
+                    change: 0.15,
+                    text: 0.2,
+                }),
+                ..Default::default()
+            }),
+        },
+        "nordfox" => Theme {
+            // OK
+            name: Some("nordfox".into()),
+            light: Some(false),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#3b4252", // black
+                    "#bf616a", // red
+                    "#a3be8c", // green
+                    "#ebcb8b", // yellow
+                    "#81a1c1", // blue
+                    "#b48ead", // magenta
+                    "#88c0d0", // cyan
+                    "#e5e9f0", // white
+                    "#c9826b", // orange
+                    "#bf88bc", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#465780", // black
+                    "#d06f79", // red
+                    "#b1d196", // green
+                    "#f0d399", // yellow
+                    "#8cafd2", // blue
+                    "#c895bf", // magenta
+                    "#93ccdc", // cyan
+                    "#e7ecf4", // white
+                    "#d89079", // orange
+                    "#d092ce", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#353a45", // black
+                    "#a54e56", // red
+                    "#8aa872", // green
+                    "#d9b263", // yellow
+                    "#668aab", // blue
+                    "#9d7495", // magenta
+                    "#69a7ba", // cyan
+                    "#bbc3d4", // white
+                    "#b46950", // orange
+                    "#a96ca5", // pink
+                )),
+                comment: Some("#60728a".into()),
+                variable: Some("#e5e9f0".into()),
+                status_line: None,
+                background: Background::Colors([
+                    "#232831".into(),
+                    "#2e3440".into(),
+                    "#39404f".into(),
+                    "#444c5e".into(),
+                    "#5a657d".into(),
+                ]),
+                foreground: Foreground::Colors([
+                    "#c7cdd9".into(),
+                    "#cdcecf".into(),
+                    "#abb1bb".into(),
+                    "#7e8188".into(),
+                ]),
+                selection: Selection::Colors(["#3e4a5b".into(), "#4f6074".into()]),
+                diff: None,
+            }),
+            config: Some(ThemeConfig {
+                diff_blend: Some(DiffBlendConfig {
+                    add: 0.15,
+                    delete: 0.15,
+                    change: 0.15,
+                    text: 0.25,
+                }),
+                ..Default::default()
+            }),
+        },
         "terafox" => Theme {
+            // OK
             name: Some("terafox".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -250,6 +396,7 @@ pub fn by_name(name: &str) -> Theme {
             }),
         },
         "dayfox" => Theme {
+            // OK
             name: Some("dayfox".into()),
             light: Some(true),
             colors: Some(ThemeColors {
@@ -298,6 +445,7 @@ pub fn by_name(name: &str) -> Theme {
             }),
         },
         "duskfox" => Theme {
+            // OK
             name: Some("duskfox".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -367,6 +515,7 @@ pub fn by_name(name: &str) -> Theme {
             }),
         },
         "paper" => Theme {
+            // OK
             name: Some("paper".into()),
             light: Some(true),
             colors: Some(ThemeColors {
@@ -663,6 +812,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "monokai" => Theme {
+            // OK
             name: Some("monokai".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -675,55 +825,56 @@ pub fn by_name(name: &str) -> Theme {
                     "#ae81ff", // magenta
                     "#a1efe4", // cyan
                     "#f8f8f2", // white
-                    "#f9a65f", // orange
-                    "#f95fbf", // pink
+                    "#fd971f", // orange
+                    "#f92672", // pink
                 ),
                 bright: Some(new_term_colors(
                     "#75715e", // black
-                    "#ff7fa0", // red
-                    "#c0eb55", // green
-                    "#f7d88f", // yellow
-                    "#8ee6ff", // blue
-                    "#c8aaff", // magenta
-                    "#c1fff7", // cyan
+                    "#f92672", // red
+                    "#a6e22e", // green
+                    "#f4bf75", // yellow
+                    "#66d9ef", // blue
+                    "#ae81ff", // magenta
+                    "#a1efe4", // cyan
                     "#f9f8f5", // white
-                    "#ffb77c", // orange
-                    "#ff7fd1", // pink
+                    "#fd971f", // orange
+                    "#f92672", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#1c1b16", // black
-                    "#c7155c", // red
-                    "#8cbf1f", // green
-                    "#c9a25a", // yellow
-                    "#52b0c0", // blue
-                    "#8c69c8", // magenta
-                    "#80cfcf", // cyan
-                    "#e6e6d8", // white
-                    "#c97a40", // orange
-                    "#c44ca8", // pink
+                    "#49483e", // black
+                    "#f92672", // red
+                    "#a6e22e", // green
+                    "#f4bf75", // yellow
+                    "#66d9ef", // blue
+                    "#ae81ff", // magenta
+                    "#a1efe4", // cyan
+                    "#f5f4f1", // white
+                    "#fd971f", // orange
+                    "#f92672", // pink
                 )),
-                comment: Some("#7f7a66".into()),
+                comment: Some("#75715e".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1f1f1b".into(),
+                    "#1e1e1c".into(),
                     "#272822".into(),
-                    "#35352d".into(),
-                    "#303028".into(),
-                    "#1a1a17".into(),
+                    "#3e3d32".into(),
+                    "#49483e".into(),
+                    "#272822".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#ecece5".into(),
                     "#f8f8f2".into(),
-                    "#cfcfc2".into(),
-                    "#9a9583".into(),
+                    "#f8f8f2".into(),
+                    "#f5f4f1".into(),
+                    "#75715e".into(),
                 ]),
-                selection: Selection::Colors(["#49483e".into(), "#CCA36A".into()]),
+                selection: Selection::Colors(["#49483e".into(), "#5E5C50".into()]),
                 diff: None,
             }),
             config: None,
         },
         "midnight_haze" => Theme {
+            // OK
             name: Some("midnight_haze".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -779,13 +930,13 @@ pub fn by_name(name: &str) -> Theme {
                     "#aab0bb".into(),
                     "#7f8596".into(),
                 ]),
-                selection: Selection::Colors(["#45456a".into(), "#70a7d4".into()]),
+                selection: Selection::Colors(["#363653".into(), "#4D85B3".into()]),
                 diff: None,
             }),
             config: None,
         },
-
         "miasma" => Theme {
+            // OK
             name: Some("miasma".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -847,6 +998,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "meliora" => Theme {
+            // OK
             name: Some("meliora".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -908,6 +1060,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "marine_dark" => Theme {
+            // OK
             name: Some("marine_dark".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -969,6 +1122,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "low_contrast" => Theme {
+            // OK
             name: Some("low_contrast".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -977,59 +1131,60 @@ pub fn by_name(name: &str) -> Theme {
                     "#bb0000", // red
                     "#00bb00", // green
                     "#bbbb00", // yellow
-                    "#0000bb", // blue
+                    "#0707DE", // blue
                     "#bb00bb", // magenta
                     "#00bbbb", // cyan
                     "#bbbbbb", // white
-                    "#bb7700", // orange
-                    "#bb00aa", // pink
+                    "#ff8800", // orange
+                    "#ff55ff", // pink
                 ),
                 bright: Some(new_term_colors(
-                    "#222222", // black
-                    "#dd2222", // red
-                    "#22dd22", // green
-                    "#dddd22", // yellow
-                    "#2222dd", // blue
-                    "#dd22dd", // magenta
-                    "#22dddd", // cyan
-                    "#dddddd", // white
-                    "#dd9900", // orange
-                    "#dd22cc", // pink
+                    "#000000", // black
+                    "#ff5555", // red
+                    "#55ff55", // green
+                    "#ffff55", // yellow
+                    "#5555ff", // blue
+                    "#ff55ff", // magenta
+                    "#55ffff", // cyan
+                    "#ffffff", // white
+                    "#ffaa00", // orange
+                    "#ff77ff", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#000000", // black
-                    "#990000", // red
-                    "#009900", // green
-                    "#999900", // yellow
-                    "#000099", // blue
-                    "#990099", // magenta
-                    "#009999", // cyan
-                    "#999999", // white
-                    "#996600", // orange
-                    "#990077", // pink
+                    "#555555", // black
+                    "#770000", // red
+                    "#007700", // green
+                    "#777700", // yellow
+                    "#000077", // blue
+                    "#770077", // magenta
+                    "#007777", // cyan
+                    "#777777", // white
+                    "#aa5500", // orange
+                    "#aa33aa", // pink
                 )),
                 comment: Some("#888888".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1f1f1f".into(),
-                    "#333333".into(),
-                    "#444444".into(),
-                    "#555555".into(),
-                    "#666666".into(),
+                    "#222222".into(), // bg0
+                    "#333333".into(), // bg1
+                    "#3a3a3a".into(), // bg2
+                    "#444444".into(), // bg3
+                    "#555555".into(), // bg4
                 ]),
                 foreground: Foreground::Colors([
-                    "#bbbbbb".into(),
-                    "#dddddd".into(),
-                    "#ffffff".into(),
-                    "#eeeeee".into(),
+                    "#eeeeee".into(), // fg0
+                    "#dddddd".into(), // fg1
+                    "#bbbbbb".into(), // fg2
+                    "#999999".into(), // fg3
                 ]),
-                selection: Selection::Colors(["#666666".into(), "#bbbbbb".into()]),
+                selection: Selection::Colors(["#555555".into(), "#666666".into()]),
                 diff: None,
             }),
             config: None,
         },
         "konsole_port" => Theme {
+            // OK
             name: Some("konsole_port".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1042,8 +1197,8 @@ pub fn by_name(name: &str) -> Theme {
                     "#b218b2", // magenta
                     "#18b2b2", // cyan
                     "#b2b2b2", // white
-                    "#d27b2a", // orange
-                    "#d22ad2", // pink
+                    "#b26818", // orange
+                    "#b218b2", // pink
                 ),
                 bright: Some(new_term_colors(
                     "#686868", // black
@@ -1054,43 +1209,44 @@ pub fn by_name(name: &str) -> Theme {
                     "#ff54ff", // magenta
                     "#54ffff", // cyan
                     "#ffffff", // white
-                    "#ffaa33", // orange
-                    "#ff55ff", // pink
+                    "#ffa654", // orange
+                    "#ff54ff", // pink
                 )),
                 dim: Some(new_term_colors(
                     "#000000", // black
-                    "#9c1414", // red
-                    "#14a414", // green
-                    "#996614", // yellow
-                    "#14149c", // blue
-                    "#9c149c", // magenta
-                    "#14a4a4", // cyan
-                    "#9c9c9c", // white
-                    "#b26b20", // orange
-                    "#b214b2", // pink
+                    "#b21818", // red
+                    "#18b218", // green
+                    "#b26818", // yellow
+                    "#1818b2", // blue
+                    "#b218b2", // magenta
+                    "#18b2b2", // cyan
+                    "#b2b2b2", // white
+                    "#b26818", // orange
+                    "#b218b2", // pink
                 )),
-                comment: Some("#7d7d7d".into()),
+                comment: Some("#7a7a7a".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
+                    "#151515".into(),
                     "#1f1f1f".into(),
-                    "#2c2c2c".into(),
-                    "#383838".into(),
+                    "#2a2a2a".into(),
+                    "#333333".into(),
                     "#444444".into(),
-                    "#505050".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#b2b2b2".into(),
-                    "#e3e3e3".into(),
                     "#ffffff".into(),
-                    "#dddddd".into(),
+                    "#e3e3e3".into(),
+                    "#b2b2b2".into(),
+                    "#888888".into(),
                 ]),
-                selection: Selection::Colors(["#b26818".into(), "#b2b2b2".into()]),
+                selection: Selection::Colors(["#292947".into(), "#b26818".into()]),
                 diff: None,
             }),
             config: None,
         },
         "kitty" => Theme {
+            // OK
             name: Some("kitty".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1152,6 +1308,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "kimbie_light" => Theme {
+            // OK
             name: Some("kimbie_light".into()),
             light: Some(true),
             colors: Some(ThemeColors {
@@ -1191,28 +1348,29 @@ pub fn by_name(name: &str) -> Theme {
                     "#c9784a", // orange
                     "#b65f87", // pink
                 )),
-                comment: Some("#8c7b6b".into()),
+                comment: Some("#99897A".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#f9ead6".into(),
+                    "#f0d8b6".into(),
                     "#fbebd4".into(),
                     "#f5e1c2".into(),
                     "#f0d8b0".into(),
                     "#e5cba0".into(),
                 ]),
                 foreground: Foreground::Colors([
+                    "#8b6b5a".into(),
                     "#6e5346".into(),
-                    "#6e5346".into(),
-                    "#8c6a59".into(),
-                    "#a17b65".into(),
+                    "#5c463a".into(),
+                    "#4a3631".into(),
                 ]),
-                selection: Selection::Colors(["#f0d8b0".into(), "#f3e0c1".into()]),
+                selection: Selection::Colors(["#E8DBCE".into(), "#d4b89c".into()]),
                 diff: None,
             }),
             config: None,
         },
         "kimbie_dark" => Theme {
+            // OK
             name: Some("kimbie_dark".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1225,55 +1383,56 @@ pub fn by_name(name: &str) -> Theme {
                     "#c792ea", // magenta
                     "#6bbab2", // cyan
                     "#d3af86", // white
-                    "#d9915a", // orange
-                    "#d982c8", // pink
+                    "#e4b581", // orange
+                    "#c792ea", // pink
                 ),
                 bright: Some(new_term_colors(
                     "#7d6f48", // black
-                    "#dd8d6f", // red
-                    "#9ab57d", // green
-                    "#f0c497", // yellow
-                    "#74a9e0", // blue
-                    "#d9a7f0", // magenta
-                    "#7dd0c9", // cyan
+                    "#c87e5a", // red
+                    "#879a6b", // green
+                    "#e4b581", // yellow
+                    "#5d90cd", // blue
+                    "#c792ea", // magenta
+                    "#6bbab2", // cyan
                     "#f2cca8", // white
-                    "#e4a573", // orange
-                    "#e3a0e0", // pink
+                    "#e4b581", // orange
+                    "#c792ea", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#1c150c", // black
-                    "#b0694f", // red
-                    "#73845a", // green
-                    "#cfa875", // yellow
-                    "#4a74a0", // blue
-                    "#aa6fca", // magenta
-                    "#559896", // cyan
-                    "#bfa87c", // white
-                    "#c98253", // orange
-                    "#b86fb2", // pink
+                    "#3b3020", // black
+                    "#b76b48", // red
+                    "#79845a", // green
+                    "#d6a875", // yellow
+                    "#4a7abc", // blue
+                    "#b078d6", // magenta
+                    "#5fa19c", // cyan
+                    "#c8a471", // white
+                    "#d6a875", // orange
+                    "#b078d6", // pink
                 )),
-                comment: Some("#7a6f5a".into()),
+                comment: Some("#7d6f48".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1a150c".into(),
-                    "#221a0f".into(),
-                    "#2c2112".into(),
-                    "#342813".into(),
-                    "#42341e".into(),
+                    "#1b140a".into(), // bg0
+                    "#221a0f".into(), // bg1
+                    "#2d2115".into(), // bg2
+                    "#342918".into(), // bg3
+                    "#7d6f48".into(), // bg4
                 ]),
                 foreground: Foreground::Colors([
-                    "#d3af86".into(),
-                    "#d3af86".into(),
-                    "#e0c399".into(),
-                    "#f0d4aa".into(),
+                    "#e4cca8".into(), // fg0
+                    "#d3af86".into(), // fg1
+                    "#b08f65".into(), // fg2
+                    "#a18b6a".into(), // fg3
                 ]),
-                selection: Selection::Colors(["#3c2f1f".into(), "#5d482f".into()]),
+                selection: Selection::Colors(["#342918".into(), "#e4cca8".into()]), // sel0, sel1
                 diff: None,
             }),
             config: None,
         },
         "kanagawa_wave" => Theme {
+            // OK
             name: Some("kanagawa_wave".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1298,43 +1457,44 @@ pub fn by_name(name: &str) -> Theme {
                     "#938aa9", // magenta
                     "#7aa89f", // cyan
                     "#dcd7ba", // white
-                    "#ffb07f", // orange
-                    "#ff7a80", // pink
+                    "#ffa066", // orange
+                    "#ff5d62", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#080512", // black
-                    "#9b3033", // red
-                    "#607856", // green
-                    "#98855a", // yellow
-                    "#6b7fae", // blue
-                    "#7b6e94", // magenta
-                    "#58766e", // cyan
-                    "#b0a78c", // white
-                    "#cc8553", // orange
-                    "#cc4a52", // pink
+                    "#1f1f28", // black
+                    "#c34043", // red
+                    "#76946a", // green
+                    "#c0a36e", // yellow
+                    "#7e9cd8", // blue
+                    "#957fb8", // magenta
+                    "#6a9589", // cyan
+                    "#dcd7ba", // white
+                    "#ffa066", // orange
+                    "#ff5d62", // pink
                 )),
-                comment: Some("#7a726a".into()),
+                comment: Some("#727169".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1b1b23".into(),
                     "#1f1f28".into(),
-                    "#292832".into(),
-                    "#2d2c38".into(),
-                    "#3a3845".into(),
+                    "#1f1f28".into(),
+                    "#2a2a37".into(),
+                    "#292936".into(),
+                    "#44415a".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#c8c093".into(),
                     "#dcd7ba".into(),
-                    "#e6d9a5".into(),
-                    "#f0e8c0".into(),
+                    "#dcd7ba".into(),
+                    "#c8c093".into(),
+                    "#b2af9e".into(),
                 ]),
-                selection: Selection::Colors(["#2d4f67".into(), "#c8c093".into()]),
+                selection: Selection::Colors(["#2d4f67".into(), "#3A6A8D".into()]),
                 diff: None,
             }),
             config: None,
         },
         "kanagawa_dragon" => Theme {
+            // OK
             name: Some("kanagawa_dragon".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1359,38 +1519,38 @@ pub fn by_name(name: &str) -> Theme {
                     "#938AA9", // magenta
                     "#7AA89F", // cyan
                     "#c5c9c5", // white
-                    "#ffb07f", // orange
-                    "#ff7a80", // pink
+                    "#ffa066", // orange
+                    "#ff5d62", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#0b0a0a", // black
-                    "#9f5b57", // red
-                    "#6e7b60", // green
-                    "#9e8e6b", // yellow
-                    "#6e8996", // blue
-                    "#7f7180", // magenta
-                    "#69837e", // cyan
-                    "#b0aa83", // white
-                    "#cc8553", // orange
-                    "#cc4a52", // pink
+                    "#0d0c0c", // black
+                    "#c4746e", // red
+                    "#8a9a7b", // green
+                    "#c4b28a", // yellow
+                    "#8ba4b0", // blue
+                    "#a292a3", // magenta
+                    "#8ea4a2", // cyan
+                    "#C8C093", // white
+                    "#ffa066", // orange
+                    "#ff5d62", // pink
                 )),
-                comment: Some("#7b7369".into()),
+                comment: Some("#7c7c72".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#141313".into(),
                     "#181616".into(),
-                    "#21201f".into(),
-                    "#272524".into(),
-                    "#353231".into(),
+                    "#181616".into(),
+                    "#2a2a28".into(),
+                    "#292724".into(),
+                    "#3a3a36".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#c8c093".into(),
                     "#c5c9c5".into(),
-                    "#d0d3c5".into(),
-                    "#dcdcdc".into(),
+                    "#c5c9c5".into(),
+                    "#a6a69c".into(),
+                    "#8f908c".into(),
                 ]),
-                selection: Selection::Colors(["#2d4f67".into(), "#c8c093".into()]),
+                selection: Selection::Colors(["#2d4f67".into(), "#3A6A8D".into()]),
                 diff: None,
             }),
             config: None,
@@ -1644,6 +1804,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "horizon_dark" => Theme {
+            // OK
             name: Some("horizon_dark".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1656,8 +1817,8 @@ pub fn by_name(name: &str) -> Theme {
                     "#ee64ac", // magenta
                     "#59e1e3", // cyan
                     "#d5d8da", // white
-                    "#f6b26b", // orange
-                    "#f075b5", // pink
+                    "#fab795", // orange
+                    "#ee64ac", // pink
                 ),
                 bright: Some(new_term_colors(
                     "#5b5858", // black
@@ -1668,43 +1829,44 @@ pub fn by_name(name: &str) -> Theme {
                     "#f075b5", // magenta
                     "#6be4e6", // cyan
                     "#d5d8da", // white
-                    "#f7c88f", // orange
-                    "#f396d0", // pink
+                    "#fbc3a7", // orange
+                    "#f075b5", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#101018", // black
-                    "#bf425f", // red
-                    "#22b38f", // green
-                    "#d89e7a", // yellow
-                    "#1f96b8", // blue
-                    "#b84d92", // magenta
-                    "#4fb7be", // cyan
-                    "#bfc1c3", // white
-                    "#c78b5f", // orange
-                    "#9d3f90", // pink
+                    "#2a2c36", // black
+                    "#e35b72", // red
+                    "#2fc39f", // green
+                    "#f9b18b", // yellow
+                    "#2fb0d6", // blue
+                    "#eb5fa0", // magenta
+                    "#55cfd9", // cyan
+                    "#c8cacc", // white
+                    "#f9b18b", // orange
+                    "#eb5fa0", // pink
                 )),
-                comment: Some("#6c7086".into()),
+                comment: Some("#727072".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1c1e26".into(),
-                    "#16161c".into(),
-                    "#222331".into(),
-                    "#2a2b3a".into(),
-                    "#333447".into(),
+                    "#1c1e26".into(), // bg0
+                    "#1c1e26".into(), // bg1
+                    "#232530".into(), // bg2
+                    "#2a2c36".into(), // bg3
+                    "#3a3c44".into(), // bg4
                 ]),
                 foreground: Foreground::Colors([
-                    "#bfc1c3".into(),
-                    "#e0e0e0".into(),
-                    "#f0f0f0".into(),
-                    "#d5d8da".into(),
+                    "#e6e6e6".into(), // fg0
+                    "#e0e0e0".into(), // fg1
+                    "#b5b5b5".into(), // fg2
+                    "#8f8f8f".into(), // fg3
                 ]),
-                selection: Selection::Colors(["#2a2b3a".into(), "#C4957E".into()]),
+                selection: Selection::Colors(["#2a2c36".into(), "#B07F66".into()]),
                 diff: None,
             }),
             config: None,
         },
         "high_contrast" => Theme {
+            // OK
             name: Some("high_contrast".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1713,7 +1875,7 @@ pub fn by_name(name: &str) -> Theme {
                     "#ff0000", // red
                     "#00ff00", // green
                     "#ffff00", // yellow
-                    "#0000ff", // blue
+                    "#0F0FFF", // blue
                     "#ff00ff", // magenta
                     "#00ffff", // cyan
                     "#ffffff", // white
@@ -1766,6 +1928,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "hardhacker" => Theme {
+            // OK
             name: Some("hardhacker".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1827,6 +1990,7 @@ pub fn by_name(name: &str) -> Theme {
             config: None,
         },
         "gruvbox_material_medium_light" => Theme {
+            // OK
             name: Some("gruvbox_material_medium_light".into()),
             light: Some(true),
             colors: Some(ThemeColors {
@@ -1839,55 +2003,56 @@ pub fn by_name(name: &str) -> Theme {
                     "#945e80", // magenta
                     "#4c7a5d", // cyan
                     "#eee0b7", // white
-                    "#d68f4a", // orange
-                    "#b46480", // pink
+                    "#d65d0e", // orange
+                    "#d3869b", // pink
                 ),
                 bright: Some(new_term_colors(
-                    "#7b5f48", // black
-                    "#d55b5b", // red
-                    "#7f8d34", // green
-                    "#c5881a", // yellow
-                    "#598994", // blue
-                    "#a16c8e", // magenta
-                    "#5e9270", // cyan
-                    "#f3e8c2", // white
-                    "#e0a060", // orange
-                    "#c27598", // pink
+                    "#7c5c46", // black
+                    "#d55c5c", // red
+                    "#7f8b3a", // green
+                    "#c98a1a", // yellow
+                    "#5a8a93", // blue
+                    "#a96a92", // magenta
+                    "#5f9172", // cyan
+                    "#f2e6c9", // white
+                    "#e16f1f", // orange
+                    "#e0a3b2", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#55412f", // black
-                    "#a33838", // red
-                    "#5c6225", // green
-                    "#946b07", // yellow
-                    "#3b5a63", // blue
-                    "#804968", // magenta
-                    "#3e614b", // cyan
-                    "#dcd1a1", // white
-                    "#b5763a", // orange
-                    "#924a69", // pink
+                    "#5b4232", // black
+                    "#a84444", // red
+                    "#5d6728", // green
+                    "#9c6408", // yellow
+                    "#3c6067", // blue
+                    "#7e4f6c", // magenta
+                    "#406654", // cyan
+                    "#dacda6", // white
+                    "#b24f0b", // orange
+                    "#b77a8f", // pink
                 )),
-                comment: Some("#7c6f5a".into()),
+                comment: Some("#928374".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#f6efd5".into(),
+                    "#f2e5bc".into(),
                     "#fbf1c7".into(),
-                    "#f1e5b8".into(),
-                    "#e8dba8".into(),
-                    "#dcd0a0".into(),
+                    "#f6ebc1".into(),
+                    "#f0e4b0".into(),
+                    "#e6d8ad".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#9c7d65".into(),
+                    "#7c6f64".into(),
                     "#654735".into(),
-                    "#8f6350".into(),
-                    "#a3735f".into(),
+                    "#5b4636".into(),
+                    "#928374".into(),
                 ]),
-                selection: Selection::Colors(["#f0e1b0".into(), "#d68f4a".into()]),
+                selection: Selection::Colors(["#ebdbb2".into(), "#d5c4a1".into()]),
                 diff: None,
             }),
             config: None,
         },
         "gruvbox_material_medium_dark" => Theme {
+            // OK
             name: Some("gruvbox_material_medium_dark".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -1900,55 +2065,56 @@ pub fn by_name(name: &str) -> Theme {
                     "#d3869b", // magenta
                     "#89b482", // cyan
                     "#d4be98", // white
-                    "#e5a663", // orange
-                    "#d48eb2", // pink
+                    "#e78a4e", // orange
+                    "#eebebe", // pink
                 ),
                 bright: Some(new_term_colors(
-                    "#504b48", // black
-                    "#f07a74", // red
-                    "#bcc87b", // green
-                    "#e2b36a", // yellow
-                    "#90c1b8", // blue
-                    "#e0aeb1", // magenta
-                    "#9cc89a", // cyan
-                    "#e7d9b2", // white
-                    "#f0bc80", // orange
-                    "#e8aac9", // pink
+                    "#504945", // black
+                    "#ea6962", // red
+                    "#a9b665", // green
+                    "#d8a657", // yellow
+                    "#7daea3", // blue
+                    "#d3869b", // magenta
+                    "#89b482", // cyan
+                    "#ddc7a1", // white
+                    "#e78a4e", // orange
+                    "#eebebe", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#2f2a28", // black
-                    "#c85b54", // red
-                    "#87924d", // green
-                    "#b58e45", // yellow
-                    "#658a87", // blue
-                    "#aa7b82", // magenta
-                    "#6d9971", // cyan
-                    "#bcae80", // white
-                    "#c78d4e", // orange
-                    "#b87c92", // pink
+                    "#32302f", // black
+                    "#b85651", // red
+                    "#8f9a52", // green
+                    "#b78b4a", // yellow
+                    "#68948a", // blue
+                    "#b36b7d", // magenta
+                    "#6f9b78", // cyan
+                    "#bdae93", // white
+                    "#c26f3a", // orange
+                    "#cfa6a6", // pink
                 )),
-                comment: Some("#7c756c".into()),
+                comment: Some("#928374".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1f1c1b".into(),
+                    "#1d2021".into(),
                     "#282828".into(),
-                    "#35312f".into(),
+                    "#32302f".into(),
                     "#3c3836".into(),
-                    "#504a48".into(),
+                    "#504945".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#cfc1a4".into(),
+                    "#ebdbb2".into(),
                     "#d4be98".into(),
-                    "#e0cfae".into(),
-                    "#d8c598".into(),
+                    "#bdae93".into(),
+                    "#928374".into(),
                 ]),
-                selection: Selection::Colors(["#504b48".into(), "#e5a663".into()]),
+                selection: Selection::Colors(["#32302f".into(), "#504945".into()]),
                 diff: None,
             }),
             config: None,
         },
         "gruvbox_material_hard_light" => Theme {
+            // OK
             name: Some("gruvbox_material_hard_light".into()),
             light: Some(true),
             colors: Some(ThemeColors {
@@ -1961,55 +2127,56 @@ pub fn by_name(name: &str) -> Theme {
                     "#945e80", // magenta
                     "#4c7a5d", // cyan
                     "#f2e5bc", // white
-                    "#d48b34", // orange
-                    "#c46992", // pink
+                    "#c35e0a", // orange
+                    "#b16286", // pink
                 ),
                 bright: Some(new_term_colors(
-                    "#7a5e49", // black
-                    "#d16060", // red
-                    "#7b8538", // green
-                    "#c68b1f", // yellow
-                    "#598b96", // blue
-                    "#aa6b95", // magenta
-                    "#60936a", // cyan
-                    "#f5e8c0", // white
-                    "#e39d51", // orange
-                    "#d984ab", // pink
+                    "#7c6f64", // black
+                    "#d65d0e", // red
+                    "#98971a", // green
+                    "#d79921", // yellow
+                    "#458588", // blue
+                    "#b16286", // magenta
+                    "#689d6a", // cyan
+                    "#fbf1c7", // white
+                    "#fe8019", // orange
+                    "#d3869b", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#57412f", // black
-                    "#a23c3c", // red
-                    "#5a6522", // green
-                    "#996202", // yellow
-                    "#365e66", // blue
-                    "#7b4b6a", // magenta
-                    "#3f6650", // cyan
-                    "#dbd0a5", // white
-                    "#b26e28", // orange
-                    "#a8557c", // pink
+                    "#a89984", // black
+                    "#cc8f8f", // red
+                    "#9da87c", // green
+                    "#d5b37c", // yellow
+                    "#8fa6ab", // blue
+                    "#b89aa8", // magenta
+                    "#9bb5a5", // cyan
+                    "#ede3c2", // white
+                    "#d6a36c", // orange
+                    "#cfa5b5", // pink
                 )),
-                comment: Some("#8c816e".into()),
+                comment: Some("#928374".into()),
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#f3ebce".into(),
+                    "#f2e5bc".into(),
                     "#f9f5d7".into(),
-                    "#f0e7c3".into(),
-                    "#e8dfb1".into(),
-                    "#d6cca1".into(),
+                    "#f4ecd0".into(),
+                    "#eee6c2".into(),
+                    "#e5dcb5".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#aa945f".into(),
+                    "#7c6f64".into(),
                     "#654735".into(),
-                    "#8c5a3d".into(),
-                    "#a06c4e".into(),
+                    "#504945".into(),
+                    "#928374".into(),
                 ]),
-                selection: Selection::Colors(["#f2e5bc".into(), "#d48b34".into()]),
+                selection: Selection::Colors(["#e5dcb5".into(), "#d5c4a1".into()]),
                 diff: None,
             }),
             config: None,
         },
         "gruvbox_material_hard_dark" => Theme {
+            // OK
             name: Some("gruvbox_material_hard_dark".into()),
             light: Some(false),
             colors: Some(ThemeColors {
@@ -2022,109 +2189,48 @@ pub fn by_name(name: &str) -> Theme {
                     "#d3869b", // magenta
                     "#89b482", // cyan
                     "#d4be98", // white
-                    "#e0af68", // orange
-                    "#d4879f", // pink
-                ),
-                bright: Some(new_term_colors(
-                    "#45423f", // black
-                    "#f28c86", // red
-                    "#c0d07f", // green
-                    "#e0b878", // yellow
-                    "#92c2bb", // blue
-                    "#e0a9b8", // magenta
-                    "#a1c7a0", // cyan
-                    "#e6d8b2", // white
-                    "#f2c27f", // orange
-                    "#e3a8c0", // pink
-                )),
-                dim: Some(new_term_colors(
-                    "#262422", // black
-                    "#c75a53", // red
-                    "#8ea04c", // green
-                    "#b78f41", // yellow
-                    "#60908d", // blue
-                    "#b17886", // magenta
-                    "#6f9b6e", // cyan
-                    "#bfa87e", // white
-                    "#c99654", // orange
-                    "#b87592", // pink
-                )),
-                comment: Some("#7c7058".into()),
-                variable: None,
-                status_line: None,
-                background: Background::Colors([
-                    "#1a1d1c".into(),
-                    "#1d2021".into(),
-                    "#262827".into(),
-                    "#2f3230".into(),
-                    "#3a3d3b".into(),
-                ]),
-                foreground: Foreground::Colors([
-                    "#cfc29d".into(),
-                    "#d4be98".into(),
-                    "#e0cfa7".into(),
-                    "#e8d9b1".into(),
-                ]),
-                selection: Selection::Colors(["#3a3d3b".into(), "#e0af68".into()]),
-                diff: None,
-            }),
-            config: None,
-        },
-        "gruvbox_material_dark_medium" => Theme {
-            name: Some("gruvbox_material_dark_medium".into()),
-            light: Some(false),
-            colors: Some(ThemeColors {
-                base: new_term_colors(
-                    "#665c54", // black
-                    "#ea6962", // red
-                    "#a9b665", // green
-                    "#e78a4e", // yellow
-                    "#7daea3", // blue
-                    "#d3869b", // magenta
-                    "#89b482", // cyan
-                    "#dfbf8e", // white
                     "#e78a4e", // orange
                     "#d3869b", // pink
                 ),
                 bright: Some(new_term_colors(
-                    "#928374", // black
-                    "#f07a73", // red
-                    "#b7c97a", // green
-                    "#e3a84e", // yellow
-                    "#8fc0b6", // blue
-                    "#e09fb0", // magenta
-                    "#9acfa0", // cyan
-                    "#ead5b7", // white
-                    "#f0a35a", // orange
-                    "#e6a6bd", // pink
+                    "#3c3836", // black
+                    "#ea6962", // red
+                    "#a9b665", // green
+                    "#d8a657", // yellow
+                    "#7daea3", // blue
+                    "#d3869b", // magenta
+                    "#89b482", // cyan
+                    "#ddc7a1", // white
+                    "#e78a4e", // orange
+                    "#d3869b", // pink
                 )),
                 dim: Some(new_term_colors(
-                    "#504945", // black
-                    "#c85f59", // red
-                    "#8f9f5f", // green
-                    "#c7783f", // yellow
-                    "#6b9c92", // blue
-                    "#b97386", // magenta
-                    "#739e78", // cyan
-                    "#c9ad7f", // white
-                    "#c7763f", // orange
-                    "#b86f86", // pink
+                    "#282828", // black
+                    "#b85651", // red
+                    "#8f9a52", // green
+                    "#b58b3a", // yellow
+                    "#68948a", // blue
+                    "#ab6c7d", // magenta
+                    "#6f9a82", // cyan
+                    "#bdae93", // white
+                    "#c8723c", // orange
+                    "#ab6c7d", // pink
                 )),
                 comment: Some("#928374".into()),
                 variable: None,
-                status_line: Some("#32302f".into()),
+                status_line: None,
                 background: Background::Colors([
+                    "#1b1b1b".into(),
                     "#1d2021".into(),
-                    "#282828".into(),
-                    "#32302f".into(),
+                    "#242424".into(),
+                    "#2a2a2a".into(),
                     "#3c3836".into(),
-                    "#504945".into(),
                 ]),
                 foreground: Foreground::Colors([
+                    "#ebdbb2".into(),
+                    "#d4be98".into(),
                     "#bdae93".into(),
-                    "#dfbf8e".into(),
-                    "#ead5b7".into(),
-                    "#a89984".into(),
+                    "#928374".into(),
                 ]),
                 selection: Selection::Colors(["#3c3836".into(), "#504945".into()]),
                 diff: None,
@@ -3123,9 +3229,9 @@ pub fn by_name(name: &str) -> Theme {
             }),
             config: None,
         },
-        "base16_default_dark" => Theme {
+        "base16_dark" => Theme {
             // OK
-            name: Some("base16_default_dark".into()),
+            name: Some("base16_dark".into()),
             light: Some(false),
             colors: Some(ThemeColors {
                 base: new_term_colors(
@@ -3181,6 +3287,378 @@ pub fn by_name(name: &str) -> Theme {
                     "#a8a8a8".into(),
                 ]),
                 selection: Selection::Colors(["#3a3a3a".into(), "#5a5a5a".into()]),
+                diff: None,
+            }),
+            config: None,
+        },
+        "chicago95" => Theme {
+            // OK
+            name: Some("chicago95".into()),
+            light: Some(false),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#000000", // black
+                    "#A80000", // red
+                    "#00A800", // green
+                    "#A85400", // yellow
+                    "#0000C2", // blue
+                    "#A800A8", // magenta
+                    "#00A8A8", // cyan
+                    "#A8A8A8", // white
+                    "#A85400", // orange
+                    "#A800A8", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#545454", // black
+                    "#FC5454", // red
+                    "#54FC54", // green
+                    "#FCFC54", // yellow
+                    "#5454FC", // blue
+                    "#FC54FC", // magenta
+                    "#54FCFC", // cyan
+                    "#FFFFFF", // white
+                    "#FCFC54", // orange
+                    "#FC54FC", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#202020", // black
+                    "#7A0000", // red
+                    "#007A00", // green
+                    "#7A3E00", // yellow
+                    "#00007A", // blue
+                    "#7A007A", // magenta
+                    "#007A7A", // cyan
+                    "#7A7A7A", // white
+                    "#7A3E00", // orange
+                    "#7A007A", // pink
+                )),
+                comment: Some("#545454".into()),
+                variable: None,
+                status_line: Some("#0000A8".into()),
+                background: Background::Colors([
+                    "#0A0A0A".into(),
+                    "#000000".into(),
+                    "#1A1A1A".into(),
+                    "#2A2A2A".into(),
+                    "#545454".into(),
+                ]),
+                foreground: Foreground::Colors([
+                    "#A8A8A8".into(),
+                    "#C0C7C8".into(),
+                    "#808080".into(),
+                    "#545454".into(),
+                ]),
+                selection: Selection::Colors(["#00132C".into(), "#272727".into()]),
+                diff: None,
+            }),
+            config: None,
+        },
+        "github_dark_tritanopia" => Theme {
+            // OK
+            name: Some("github_dark_tritanopia".into()),
+            light: Some(false),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#484f58", // black
+                    "#ff7b72", // red
+                    "#58a6ff", // green
+                    "#d29922", // yellow
+                    "#58a6ff", // blue
+                    "#bc8cff", // magenta
+                    "#39c5cf", // cyan
+                    "#b1bac4", // white
+                    "#d29922", // orange
+                    "#ff7b72", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#6e7681", // black
+                    "#ffa198", // red
+                    "#79c0ff", // green
+                    "#e3b341", // yellow
+                    "#79c0ff", // blue
+                    "#bc8cff", // magenta
+                    "#39c5cf", // cyan
+                    "#b1bac4", // white
+                    "#e3b341", // orange
+                    "#ffa198", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#484f58", // black
+                    "#ff7b72", // red
+                    "#58a6ff", // green
+                    "#d29922", // yellow
+                    "#58a6ff", // blue
+                    "#bc8cff", // magenta
+                    "#39c5cf", // cyan
+                    "#b1bac4", // white
+                    "#d29922", // orange
+                    "#ff7b72", // pink
+                )),
+                comment: Some("#6e7681".into()),
+                variable: None,
+                status_line: None,
+                background: Background::Colors([
+                    "#0b0f14".into(),
+                    "#0d1117".into(),
+                    "#161b22".into(),
+                    "#1b2128".into(),
+                    "#484f58".into(),
+                ]),
+                foreground: Foreground::Colors([
+                    "#c9d1d9".into(),
+                    "#c9d1d9".into(),
+                    "#8b949e".into(),
+                    "#6e7681".into(),
+                ]),
+                selection: Selection::Colors(["#2B3645".into(), "#197DF0".into()]),
+                diff: None,
+            }),
+            config: None,
+        },
+        "xcode_light" => Theme {
+            // OK
+            name: Some("xcode_light".into()),
+            light: Some(true),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#262626", // black
+                    "#d12f1b", // red
+                    "#23575c", // green
+                    "#78492a", // yellow
+                    "#0b4f79", // blue
+                    "#ad3da4", // magenta
+                    "#4b21b0", // cyan
+                    "#ffffff", // white
+                    "#78492a", // orange
+                    "#ad3da4", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#8a99a6", // black
+                    "#d12f1b", // red
+                    "#23575c", // green
+                    "#78492a", // yellow
+                    "#0b4f79", // blue
+                    "#ad3da4", // magenta
+                    "#4b21b0", // cyan
+                    "#262626", // white
+                    "#78492a", // orange
+                    "#ad3da4", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#b4d8fd", // black
+                    "#d12f1b", // red
+                    "#3e8087", // green
+                    "#78492a", // yellow
+                    "#0f68a0", // blue
+                    "#ad3da4", // magenta
+                    "#804fb8", // cyan
+                    "#262626", // white
+                    "#78492a", // orange
+                    "#ad3da4", // pink
+                )),
+                comment: Some("#8a99a6".into()),
+                variable: None,
+                status_line: None,
+                background: Background::Colors([
+                    "#f0f4f8".into(),
+                    "#ffffff".into(),
+                    "#f8faff".into(),
+                    "#f2f6fa".into(),
+                    "#dfe3e8".into(),
+                ]),
+                foreground: Foreground::Colors([
+                    "#4d4d4d".into(),
+                    "#262626".into(),
+                    "#1a1a1a".into(),
+                    "#5f5f5f".into(),
+                ]),
+                selection: Selection::Colors(["#b4d8fd".into(), "#3F99F3".into()]),
+                diff: None,
+            }),
+            config: None,
+        },
+        "xcode_dark" => Theme {
+            // OK
+            name: Some("xcode_dark".into()),
+            light: Some(false),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#414453", // black
+                    "#ff8170", // red
+                    "#78c2b3", // green
+                    "#d9c97c", // yellow
+                    "#4eb0cc", // blue
+                    "#ff7ab2", // magenta
+                    "#b281eb", // cyan
+                    "#dfdfe0", // white
+                    "#ffa14f", // orange
+                    "#ff7ab2", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#7f8c98", // black
+                    "#ff8170", // red
+                    "#acf2e4", // green
+                    "#ffa14f", // yellow
+                    "#6bdfff", // blue
+                    "#ff7ab2", // magenta
+                    "#dabaff", // cyan
+                    "#dfdfe0", // white
+                    "#ffa14f", // orange
+                    "#ff7ab2", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#414453", // black
+                    "#ff8170", // red
+                    "#78c2b3", // green
+                    "#d9c97c", // yellow
+                    "#4eb0cc", // blue
+                    "#ff7ab2", // magenta
+                    "#b281eb", // cyan
+                    "#dfdfe0", // white
+                    "#ffa14f", // orange
+                    "#ff7ab2", // pink
+                )),
+                comment: Some("#7f8c98".into()),
+                variable: None,
+                status_line: None,
+                background: Background::Colors([
+                    "#1e2026".into(),
+                    "#292a30".into(),
+                    "#383b46".into(),
+                    "#414453".into(),
+                    "#5a5f6e".into(),
+                ]),
+                foreground: Foreground::Colors([
+                    "#e0e0e0".into(),
+                    "#dfdfe0".into(),
+                    "#c1c1c1".into(),
+                    "#9a9da8".into(),
+                ]),
+                selection: Selection::Colors(["#414453".into(), "#5A5E72".into()]),
+                diff: None,
+            }),
+            config: None,
+        },
+        "neobones_light" => Theme {
+            // OK
+            name: Some("neobones_light".into()),
+            light: Some(true),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#e5ede6", // black
+                    "#a8334c", // red
+                    "#567a30", // green
+                    "#944927", // yellow
+                    "#286486", // blue
+                    "#88507d", // magenta
+                    "#3b8992", // cyan
+                    "#202e18", // white
+                    "#944927", // orange
+                    "#7b3b70", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#99ac9c", // black
+                    "#94253e", // red
+                    "#3f5a22", // green
+                    "#803d1c", // yellow
+                    "#1d5573", // blue
+                    "#7b3b70", // magenta
+                    "#2b747c", // cyan
+                    "#415934", // white
+                    "#803d1c", // orange
+                    "#7b3b70", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#cbd9c7", // black
+                    "#b04159", // red
+                    "#6a8b3d", // green
+                    "#a56a4a", // yellow
+                    "#4d7b9a", // blue
+                    "#a06b91", // magenta
+                    "#5ea0aa", // cyan
+                    "#3b5030", // white
+                    "#a56a4a", // orange
+                    "#a06b91", // pink
+                )),
+                comment: Some("#7a856d".into()),
+                variable: None,
+                status_line: None,
+                background: Background::Colors([
+                    "#d9e5d5".into(), // bg0
+                    "#e5ede6".into(), // bg1
+                    "#f0f6eb".into(), // bg2
+                    "#f5f9ef".into(), // bg3
+                    "#cdd6c1".into(), // bg4
+                ]),
+                foreground: Foreground::Colors([
+                    "#ffffff".into(), // fg0
+                    "#202e18".into(), // fg1
+                    "#1a2612".into(), // fg2
+                    "#4a5c3d".into(), // fg3
+                ]),
+                selection: Selection::Colors(["#BEE7A6".into(), "#91B67C".into()]),
+                diff: None,
+            }),
+            config: None,
+        },
+        "neobones_dark" => Theme {
+            // OK
+            name: Some("neobones_dark".into()),
+            light: Some(false),
+            colors: Some(ThemeColors {
+                base: new_term_colors(
+                    "#0f191f", // black
+                    "#de6e7c", // red
+                    "#90ff6b", // green
+                    "#b77e64", // yellow
+                    "#8190d4", // blue
+                    "#b279a7", // magenta
+                    "#66a5ad", // cyan
+                    "#c6d5cf", // white
+                    "#b77e64", // orange
+                    "#cf86c1", // pink
+                ),
+                bright: Some(new_term_colors(
+                    "#334652", // black
+                    "#e8838f", // red
+                    "#a0ff85", // green
+                    "#d68c67", // yellow
+                    "#92a0e2", // blue
+                    "#cf86c1", // magenta
+                    "#65b8c1", // cyan
+                    "#98a39e", // white
+                    "#d68c67", // orange
+                    "#cf86c1", // pink
+                )),
+                dim: Some(new_term_colors(
+                    "#1c2930", // black
+                    "#de8a92", // red
+                    "#9cfb7b", // green
+                    "#c28b74", // yellow
+                    "#8a97c8", // blue
+                    "#c894bf", // magenta
+                    "#70b5bd", // cyan
+                    "#a3b3aa", // white
+                    "#c28b74", // orange
+                    "#c894bf", // pink
+                )),
+                comment: Some("#7a857a".into()),
+                variable: None,
+                status_line: None,
+                background: Background::Colors([
+                    "#0c151a".into(), // bg0
+                    "#0f191f".into(), // bg1
+                    "#1a2226".into(), // bg2
+                    "#252b2e".into(), // bg3
+                    "#2b3234".into(), // bg4
+                ]),
+                foreground: Foreground::Colors([
+                    "#e5e8e3".into(), // fg0
+                    "#c6d5cf".into(), // fg1
+                    "#a0b09b".into(), // fg2
+                    "#7f8a82".into(), // fg3
+                ]),
+                selection: Selection::Colors(["#3a3e3d".into(), "#5B6764".into()]),
                 diff: None,
             }),
             config: None,

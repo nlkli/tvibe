@@ -72,11 +72,10 @@ fn write_theme_to_alacritty_config(
     config.replace_colors_from_theme(theme.get_colors());
     let buff = toml::to_string_pretty(&config)?;
     std::fs::write(&full_config_path, &buff)?;
-
     Ok(())
 }
 
-/// Theme
+/// themesymc
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args { 
@@ -84,17 +83,41 @@ struct Args {
     #[arg(short, long)]
     rand: bool,
 
+    /// Set random light theme
+    #[arg(short, long)]
+    light_rand: bool,
+
+    /// Set random dark theme
+    #[arg(short, long)]
+    dark_rand: bool,
+
     /// Search and apply theme
     #[arg(short, long)]
     query: Option<String>,
+
+    /// List of available themes
+    #[arg(long)]
+    list: bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
+    if args.list {
+        for i in collection::LIST {
+            println!("{}", i);
+        }
+    }
+
     let mut theme = {
         if args.rand {
-            let theme = collection::rand();
+            let theme = if args.dark_rand {
+                collection::rand_dark()
+            } else if args.light_rand {
+                collection::rand_light()
+            } else {
+                collection::rand()
+            };
             println!("{}", theme.name.clone().unwrap_or_default());
             theme
         } else if !args.rand && args.query.is_some() {
