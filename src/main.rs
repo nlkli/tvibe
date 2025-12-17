@@ -107,6 +107,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         for i in collection::LIST {
             println!("{}", i);
         }
+        return Ok(());
     }
 
     let mut theme = {
