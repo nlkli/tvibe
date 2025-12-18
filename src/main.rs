@@ -1,5 +1,6 @@
 use clap::Parser;
-use std::{fmt::Write, io::BufRead};
+use strsim::levenshtein;
+use std::{collections::HashSet, fmt::Write, io::BufRead};
 mod collection;
 mod color;
 mod models;
@@ -13,7 +14,7 @@ fn write_theme_to_nvim_config(theme: &mut models::Theme) -> Result<(), Box<dyn s
     const END_BLOCK_MARK: &str = "-- ====THEMESYNCENDBLOCK====";
 
     let content = templ::nvim(theme);
-    let full_config_path = std::env::home_dir().unwrap().join(NVIM_CONFIG_FILE_PATH);
+    let full_config_path = std::env::home_dir().expect("home_dir").join(NVIM_CONFIG_FILE_PATH);
     let file = std::fs::File::open(&full_config_path).unwrap();
     let reader = std::io::BufReader::new(file);
 
@@ -63,21 +64,86 @@ fn write_theme_to_nvim_config(theme: &mut models::Theme) -> Result<(), Box<dyn s
     Ok(())
 }
 
+fn alacritty_full_config_path() -> std::path::PathBuf {
+    std::env::home_dir()
+        .expect("home_dir")
+        .join(ALACRITTY_CONFIG_FILE_PATH)
+}
+
+fn read_alacritty_config(path: impl AsRef<std::path::Path>) -> Result<models::alacritty::Config, Box<dyn std::error::Error>> {
+    let buff = std::fs::read_to_string(path)?;
+    Ok(toml::from_str::<models::alacritty::Config>(&buff)?)
+}
+
+fn write_alacritty_config(path: impl AsRef<std::path::Path>, config: &models::alacritty::Config) -> Result<models::alacritty::Config, Box<dyn std::error::Error>> {
+    let buff = toml::to_string_pretty(&config)?;
+    std::fs::write(&path, &buff)?;
+    Ok(toml::from_str::<models::alacritty::Config>(&buff)?)
+}
+
 fn write_theme_to_alacritty_config(
     theme: &mut models::Theme,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let full_config_path = std::env::home_dir()
-        .unwrap()
-        .join(ALACRITTY_CONFIG_FILE_PATH);
-    let buff = std::fs::read_to_string(&full_config_path)?;
-    let mut config = toml::from_str::<models::alacritty::Config>(&buff)?;
+    let path = alacritty_full_config_path();
+    let mut config = read_alacritty_config(&path)?;
     config.replace_colors_from_theme(theme.get_colors());
-    let buff = toml::to_string_pretty(&config)?;
-    std::fs::write(&full_config_path, &buff)?;
+    write_alacritty_config(path, &config)?;
     Ok(())
 }
 
-/// themesymc
+fn nerd_font_list() -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    let list = if cfg!(target_os = "macos") {
+        let path = std::env::home_dir().expect("home_dir").join("Library/Fonts");
+        std::fs::read_dir(path)?.into_iter()
+            .map(|e| e.expect("read_dir").path())
+            .filter(|e| e.is_file())
+            .map(|f| f.file_name()
+                .unwrap()
+                .to_os_string()
+                .into_string()
+                .expect("utf8")
+                .split_once("-")
+                .map(|(p1, p2)| (p1.to_string(), p2.to_string())))
+            .filter(Option::is_some)
+            .map(|v| v.unwrap().0)
+            .filter(|s| s.contains("NerdFont"))
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .map(|v| {
+                v.replace("NerdFont", " Nerd Font ").replace("  ", " ").trim().to_string()
+            })
+            .collect()
+    } else if cfg!(target_os = "linux") {
+        println!("not implemented for linux");
+        vec![]
+    } else {
+        vec![]
+    };
+
+    Ok(list)
+}
+
+fn change_alacritty_font(query: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let query = query.to_lowercase();
+    if cfg!(target_os = "linux") {
+        println!("not implemented for linux");
+    } else if cfg!(target_os = "macos") {
+        let fonts = nerd_font_list()?;
+        if fonts.is_empty() {
+            println!("not found nerd family fonts");
+            return Ok(());
+        }
+        let font = fonts.iter()
+            .min_by_key(|v| levenshtein(&v.to_lowercase(), &query)).ok_or("not match")?;
+        let path = alacritty_full_config_path();
+        let mut config = read_alacritty_config(&path)?;
+        config.set_font_family(font);
+        write_alacritty_config(path, &config)?;
+    }
+    Ok(())
+}
+
+/// theme changing utility
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
@@ -100,15 +166,38 @@ struct Args {
     /// List of available themes
     #[arg(long)]
     list: bool,
+
+    /// Change alacritty nerd font family
+    #[arg(short, long)]
+    font: Option<String>,
+
+    /// List of nerd font family
+    #[arg(long)]
+    font_list: bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
+    let mut exit = false;
     if args.list {
         for i in collection::LIST {
             println!("{}", i);
         }
+        exit = true;
+    }
+    if args.font_list {
+        for i in nerd_font_list()? {
+            println!("{}", i);
+        }
+        exit = true;
+    }
+    if let Some(ref font) = args.font {
+        change_alacritty_font(font)?;
+        exit = true;
+    }
+
+    if exit {
         return Ok(());
     }
 

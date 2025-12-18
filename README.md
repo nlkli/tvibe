@@ -12,36 +12,28 @@ themesync — простая утилита для синхронизации ц
 - Случайный выбор светлой или тёмной темы
 - Поиск и применение темы по названию
 - Просмотр списка доступных тем
+- Изменить Nerd шрифт в alacritty
+- Просмотр списка установденных Nerd шрифтов
+- Умный поиск при установки темы или шрифта (не точный ввод)
 
 ## Использование
 
-themesync [OPTIONS]
-
-## Опции
 ```text
--r, --rand  
-Установить случайную тему
+theme changing utility
 
--l, --light-rand  
-Установить случайную светлую тему
+Usage: themesync [OPTIONS]
 
--d, --dark-rand  
-Установить случайную тёмную тему
-
--q, --query <QUERY>  
-Найти и применить тему (умный поиск)
-
---list  
-Показать список доступных тем
-
--h, --help  
-Показать справку
-
--V, --version  
-Показать версию
+Options:
+  -r, --rand           Set random theme
+  -l, --light-rand     Set random light theme
+  -d, --dark-rand      Set random dark theme
+  -q, --query <QUERY>  Search and apply theme
+      --list           List of available themes
+  -f, --font <FONT>    Change alacritty nerd font family
+      --font-list      List of nerd font family
+  -h, --help           Print help
+  -V, --version        Print version
 ```
-
-## Принцип работы
 
 themesync содержит встроенный набор готовых тем.
 
@@ -56,8 +48,6 @@ https://github.com/alacritty/alacritty-theme
 
 - Neovim
 - Alacritty
-
-После выполнения команды тема применяется сразу в обоих приложениях.
 
 ## Список доступных тем
 

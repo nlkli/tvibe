@@ -578,6 +578,9 @@ pub mod alacritty {
         #[serde(skip_serializing_if = "Option::is_none")]
         pub colors: Option<Colors>,
 
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub font: Option<Font>,
+
         #[serde(flatten)]
         pub other: toml::Value,
     }
@@ -586,6 +589,12 @@ pub mod alacritty {
         pub fn replace_colors_from_theme(&mut self, theme: &ThemeColors) {
             let new_colors = Colors::from_theme(theme);
             self.colors = Some(new_colors);
+        }
+
+        pub fn set_font_family(&mut self, f: &str) {
+            self.font.replace(Font {
+               normal: FontInner { family: f.into() } 
+            });
         }
     }
 
@@ -742,5 +751,15 @@ pub mod alacritty {
     pub struct IndexedColor {
         pub index: u8,
         pub color: String,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct Font {
+        pub normal: FontInner,
+    }
+
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+    pub struct FontInner {
+        pub family: String,
     }
 }
