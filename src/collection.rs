@@ -1166,17 +1166,17 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#222222".into(), // bg0
-                    "#333333".into(), // bg1
-                    "#3a3a3a".into(), // bg2
-                    "#444444".into(), // bg3
-                    "#555555".into(), // bg4
+                    "#222222".into(),
+                    "#333333".into(),
+                    "#3a3a3a".into(),
+                    "#444444".into(),
+                    "#555555".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#eeeeee".into(), // fg0
-                    "#dddddd".into(), // fg1
-                    "#bbbbbb".into(), // fg2
-                    "#999999".into(), // fg3
+                    "#eeeeee".into(),
+                    "#dddddd".into(),
+                    "#bbbbbb".into(),
+                    "#999999".into(),
                 ]),
                 selection: Selection::Colors(["#555555".into(), "#666666".into()]),
                 diff: None,
@@ -1414,19 +1414,19 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1b140a".into(), // bg0
-                    "#221a0f".into(), // bg1
-                    "#2d2115".into(), // bg2
-                    "#342918".into(), // bg3
-                    "#7d6f48".into(), // bg4
+                    "#1b140a".into(),
+                    "#221a0f".into(),
+                    "#2d2115".into(),
+                    "#342918".into(),
+                    "#7d6f48".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#e4cca8".into(), // fg0
-                    "#d3af86".into(), // fg1
-                    "#b08f65".into(), // fg2
-                    "#a18b6a".into(), // fg3
+                    "#e4cca8".into(),
+                    "#d3af86".into(),
+                    "#b08f65".into(),
+                    "#a18b6a".into(),
                 ]),
-                selection: Selection::Colors(["#342918".into(), "#e4cca8".into()]), // sel0, sel1
+                selection: Selection::Colors(["#342918".into(), "#e4cca8".into()]),
                 diff: None,
             }),
             config: None,
@@ -1476,14 +1476,14 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1f1f28".into(),
+                    "#0B0B0F".into(),
                     "#1f1f28".into(),
                     "#2a2a37".into(),
                     "#292936".into(),
                     "#44415a".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#dcd7ba".into(),
+                    "#E4E2D2".into(),
                     "#dcd7ba".into(),
                     "#c8c093".into(),
                     "#b2af9e".into(),
@@ -1538,14 +1538,14 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#181616".into(),
+                    "#000000".into(),
                     "#181616".into(),
                     "#2a2a28".into(),
                     "#292724".into(),
                     "#3a3a36".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#c5c9c5".into(),
+                    "#D5D7D5".into(),
                     "#c5c9c5".into(),
                     "#a6a69c".into(),
                     "#8f908c".into(),
@@ -1848,17 +1848,17 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1c1e26".into(), // bg0
-                    "#1c1e26".into(), // bg1
-                    "#232530".into(), // bg2
-                    "#2a2c36".into(), // bg3
-                    "#3a3c44".into(), // bg4
+                    "#1c1e26".into(),
+                    "#1c1e26".into(),
+                    "#232530".into(),
+                    "#2a2c36".into(),
+                    "#3a3c44".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#e6e6e6".into(), // fg0
-                    "#e0e0e0".into(), // fg1
-                    "#b5b5b5".into(), // fg2
-                    "#8f8f8f".into(), // fg3
+                    "#e6e6e6".into(),
+                    "#e0e0e0".into(),
+                    "#b5b5b5".into(),
+                    "#8f8f8f".into(),
                 ]),
                 selection: Selection::Colors(["#2a2c36".into(), "#B07F66".into()]),
                 diff: None,
@@ -2592,14 +2592,14 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#191724".into(),
+                    "#0A0811".into(),
                     "#191724".into(),
                     "#1f1d2e".into(),
                     "#26233a".into(),
                     "#403d52".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#e0def4".into(),
+                    "#E8E7F3".into(),
                     "#e0def4".into(),
                     "#c8c5dd".into(),
                     "#908caa".into(),
@@ -3088,14 +3088,14 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#232323".into(),
+                    "#0F0F0F".into(),
                     "#232323".into(),
                     "#2e2e2e".into(),
                     "#2b2b2b".into(),
                     "#3a3a3a".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#f3f2cc".into(),
+                    "#F1F0DA".into(),
                     "#f3f2cc".into(),
                     "#c8c8c8".into(),
                     "#a8a8a8".into(),
@@ -3150,14 +3150,14 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#f3f4f5".into(),
+                    "#CFD9E2".into(),
                     "#f3f4f5".into(),
                     "#e1e3e5".into(),
                     "#d6d8da".into(),
                     "#c0c3c6".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#565e65".into(),
+                    "#49525B".into(),
                     "#565e65".into(),
                     "#3e454c".into(),
                     "#747c84".into(),
@@ -3212,7 +3212,7 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#1c2023".into(),
+                    "#0D1011".into(),
                     "#1c2023".into(),
                     "#25292d".into(),
                     "#2a2f33".into(),
@@ -3274,14 +3274,14 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#181818".into(),
+                    "#111111".into(),
                     "#181818".into(),
                     "#202020".into(),
                     "#282828".into(),
                     "#383838".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#d8d8d8".into(),
+                    "#E6E6E6".into(),
                     "#d8d8d8".into(),
                     "#b8b8b8".into(),
                     "#a8a8a8".into(),
@@ -3584,17 +3584,17 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#d9e5d5".into(), // bg0
-                    "#e5ede6".into(), // bg1
-                    "#f0f6eb".into(), // bg2
-                    "#f5f9ef".into(), // bg3
-                    "#cdd6c1".into(), // bg4
+                    "#d9e5d5".into(),
+                    "#e5ede6".into(),
+                    "#f0f6eb".into(),
+                    "#f5f9ef".into(),
+                    "#cdd6c1".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#ffffff".into(), // fg0
-                    "#202e18".into(), // fg1
-                    "#1a2612".into(), // fg2
-                    "#4a5c3d".into(), // fg3
+                    "#ffffff".into(),
+                    "#202e18".into(),
+                    "#1a2612".into(),
+                    "#4a5c3d".into(),
                 ]),
                 selection: Selection::Colors(["#BEE7A6".into(), "#91B67C".into()]),
                 diff: None,
@@ -3646,17 +3646,17 @@ pub fn by_name(name: &str) -> Theme {
                 variable: None,
                 status_line: None,
                 background: Background::Colors([
-                    "#0c151a".into(), // bg0
-                    "#0f191f".into(), // bg1
-                    "#1a2226".into(), // bg2
-                    "#252b2e".into(), // bg3
-                    "#2b3234".into(), // bg4
+                    "#0c151a".into(),
+                    "#0f191f".into(),
+                    "#1a2226".into(),
+                    "#252b2e".into(),
+                    "#2b3234".into(),
                 ]),
                 foreground: Foreground::Colors([
-                    "#e5e8e3".into(), // fg0
-                    "#c6d5cf".into(), // fg1
-                    "#a0b09b".into(), // fg2
-                    "#7f8a82".into(), // fg3
+                    "#e5e8e3".into(),
+                    "#c6d5cf".into(),
+                    "#a0b09b".into(),
+                    "#7f8a82".into(),
                 ]),
                 selection: Selection::Colors(["#3a3e3d".into(), "#5B6764".into()]),
                 diff: None,
