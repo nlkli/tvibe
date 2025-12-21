@@ -186,12 +186,15 @@ fn set_alacritty_font(query: &str) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+/// 
 #[derive(Parser)]
 #[command(
     name = "tvibe",
     version,
-    about = "Change your terminal theme and font easily.",
-    long_about = r#"Examples:
+    about = "Change your terminal theme and font easily",
+    long_about = r#"Change your terminal theme and font easily
+
+Examples:
     tvibe -t <query> -f <query> # set specific theme and font
     tvibe -rdF                  # set rand dark theme and rand font"#
 )]
