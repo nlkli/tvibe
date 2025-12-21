@@ -122,19 +122,22 @@ pub const LIGHT_LIST: [&str; 11] = [
     "xcode_light",
 ];
 
+#[inline(always)]
 pub fn rand() -> Theme {
     let name = LIST.choose(&mut rand::rng());
-    by_name(*name.unwrap_or(&LIST[0]))
+    by_name(unsafe { *name.unwrap_unchecked() })
 }
 
+#[inline(always)]
 pub fn rand_light() -> Theme {
     let name = LIGHT_LIST.choose(&mut rand::rng());
-    by_name(*name.unwrap_or(&LIST[0]))
+    by_name(unsafe { *name.unwrap_unchecked() })
 }
 
+#[inline(always)]
 pub fn rand_dark() -> Theme {
     let name = DARK_LIST.choose(&mut rand::rng());
-    by_name(*name.unwrap_or(&LIST[0]))
+    by_name(unsafe { *name.unwrap_unchecked() })
 }
 
 pub fn search(query: &str) -> Theme {

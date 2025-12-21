@@ -1,233 +1,244 @@
-use clap::Parser;
-use strsim::levenshtein;
-use std::{collections::HashSet, fmt::Write, io::BufRead};
 mod collection;
 mod color;
 mod models;
 mod templ;
+use clap::Parser;
+use rand::seq::IndexedRandom;
+use std::{fmt::Write, io::BufRead};
+use strsim::levenshtein;
 
 const NVIM_CONFIG_FILE_PATH: &str = ".config/nvim/init.lua";
 const ALACRITTY_CONFIG_FILE_PATH: &str = ".config/alacritty/alacritty.toml";
 
-fn write_theme_to_nvim_config(theme: &mut models::Theme) -> Result<(), Box<dyn std::error::Error>> {
-    const START_BLOCK_MARK: &str = "-- ====THEMESYNCSTARTBLOCK====";
-    const END_BLOCK_MARK: &str = "-- ====THEMESYNCENDBLOCK====";
+#[inline(always)]
+fn home_path_join(p: impl AsRef<std::path::Path>) -> std::path::PathBuf {
+    std::env::home_dir().expect("home_dir").join(p)
+}
+
+fn apply_theme_to_nvim(theme: &mut models::Theme) -> Result<(), Box<dyn std::error::Error>> {
+    const START_MARK: &str = "-- ====THEMESYNCSTARTBLOCK====";
+    const END_MARK: &str = "-- ====THEMESYNCENDBLOCK====";
 
     let content = templ::nvim(theme);
-    let full_config_path = std::env::home_dir().expect("home_dir").join(NVIM_CONFIG_FILE_PATH);
-    let file = std::fs::File::open(&full_config_path).unwrap();
+    let path = home_path_join(NVIM_CONFIG_FILE_PATH);
+
+    let file = std::fs::File::open(&path).unwrap();
     let reader = std::io::BufReader::new(file);
 
-    let mut buff = String::new();
+    let mut buf = String::new();
     let mut lines = reader.lines();
-    let mut insert_done = false;
+    let mut inserted = false;
 
     while let Some(line) = lines.next() {
         let line = line?;
-        writeln!(&mut buff, "{}", &line)?;
-        if line == START_BLOCK_MARK {
-            writeln!(&mut buff, "{}", &content)?;
-            insert_done = true;
+        writeln!(&mut buf, "{}", &line)?;
+        if line == START_MARK {
+            writeln!(&mut buf, "{}", &content)?;
+            inserted = true;
             break;
         }
     }
-    if insert_done {
-        let mut old_block_buff = String::new();
-        let mut block_end = false;
+    if inserted {
+        let mut replace_buf = String::new();
+        let mut found_end = false;
         while let Some(line) = lines.next() {
             let line = line?;
-            writeln!(&mut old_block_buff, "{}", &line)?;
-            if line == END_BLOCK_MARK {
-                block_end = true;
+            writeln!(&mut replace_buf, "{}", &line)?;
+            if line == END_MARK {
+                found_end = true;
                 break;
             }
         }
-        if block_end {
-            writeln!(&mut buff, "{}", &END_BLOCK_MARK)?;
+        if found_end {
+            writeln!(&mut buf, "{}", &END_MARK)?;
         } else {
-            writeln!(&mut buff, "{}", &old_block_buff)?;
+            writeln!(&mut buf, "{}", &replace_buf)?;
         }
         while let Some(line) = lines.next() {
             let line = line?;
-            writeln!(&mut buff, "{}", &line)?;
+            writeln!(&mut buf, "{}", &line)?;
         }
     } else {
-        writeln!(
-            &mut buff,
-            "\n{START_BLOCK_MARK}\n{}\n{END_BLOCK_MARK}",
-            &content
-        )?;
+        writeln!(&mut buf, "\n{START_MARK}\n{content}\n{END_MARK}")?;
     }
 
-    std::fs::write(&full_config_path, &buff)?;
-
+    std::fs::write(&path, &buf)?;
     Ok(())
 }
 
-fn alacritty_full_config_path() -> std::path::PathBuf {
-    std::env::home_dir()
-        .expect("home_dir")
-        .join(ALACRITTY_CONFIG_FILE_PATH)
-}
-
-fn read_alacritty_config(path: impl AsRef<std::path::Path>) -> Result<models::alacritty::Config, Box<dyn std::error::Error>> {
+#[inline(always)]
+fn load_alacritty_config(
+    path: impl AsRef<std::path::Path>,
+) -> Result<models::alacritty::Config, Box<dyn std::error::Error>> {
     let buff = std::fs::read_to_string(path)?;
     Ok(toml::from_str::<models::alacritty::Config>(&buff)?)
 }
 
-fn write_alacritty_config(path: impl AsRef<std::path::Path>, config: &models::alacritty::Config) -> Result<models::alacritty::Config, Box<dyn std::error::Error>> {
+#[inline(always)]
+fn save_alacritty_config(
+    path: impl AsRef<std::path::Path>,
+    config: &models::alacritty::Config,
+) -> Result<models::alacritty::Config, Box<dyn std::error::Error>> {
     let buff = toml::to_string_pretty(&config)?;
     std::fs::write(&path, &buff)?;
     Ok(toml::from_str::<models::alacritty::Config>(&buff)?)
 }
 
-fn write_theme_to_alacritty_config(
-    theme: &mut models::Theme,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let path = alacritty_full_config_path();
-    let mut config = read_alacritty_config(&path)?;
+fn apply_theme_to_alacritty(theme: &mut models::Theme) -> Result<(), Box<dyn std::error::Error>> {
+    let path = home_path_join(ALACRITTY_CONFIG_FILE_PATH);
+    let mut config = load_alacritty_config(&path)?;
     config.replace_colors_from_theme(theme.get_colors());
-    write_alacritty_config(path, &config)?;
+    save_alacritty_config(path, &config)?;
     Ok(())
 }
 
-fn nerd_font_list() -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    let list = if cfg!(target_os = "macos") {
-        let path = std::env::home_dir().expect("home_dir").join("Library/Fonts");
-        std::fs::read_dir(path)?.into_iter()
-            .map(|e| e.expect("read_dir").path())
-            .filter(|e| e.is_file())
-            .map(|f| f.file_name()
-                .unwrap()
-                .to_os_string()
-                .into_string()
-                .expect("utf8")
-                .split_once("-")
-                .map(|(p1, p2)| (p1.to_string(), p2.to_string())))
-            .filter(Option::is_some)
-            .map(|v| v.unwrap().0)
-            .filter(|s| s.contains("NerdFont"))
-            .collect::<HashSet<_>>()
-            .into_iter()
-            .map(|v| {
-                v.replace("NerdFont", " Nerd Font ").replace("  ", " ").trim().to_string()
-            })
-            .collect()
-    } else if cfg!(target_os = "linux") {
-        println!("not implemented for linux");
-        vec![]
-    } else {
-        vec![]
-    };
+fn list_nerd_fonts() -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    let mut fonts = Vec::new();
 
-    Ok(list)
-}
+    #[cfg(target_os = "macos")]
+    {
+        let path = home_path_join("Library/Fonts");
+        for entry in std::fs::read_dir(path)? {
+            let path = entry?.path();
+            if !path.is_file() {
+                continue;
+            }
 
-fn change_alacritty_font(query: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let query = query.to_lowercase();
-    if cfg!(target_os = "linux") {
-        println!("not implemented for linux");
-    } else if cfg!(target_os = "macos") {
-        let fonts = nerd_font_list()?;
-        if fonts.is_empty() {
-            println!("not found nerd family fonts");
-            return Ok(());
+            if let Some(file_name) = path.file_name().and_then(|s| s.to_str()) {
+                if let Some((name, _)) = file_name.split_once('-') {
+                    if name.contains("NerdFont") {
+                        let name = name
+                            .replace("NerdFont", " Nerd Font ")
+                            .replace(" ", " ")
+                            .trim()
+                            .to_string();
+                        fonts.push(name);
+                    }
+                }
+            }
         }
-        let font = fonts.iter()
-            .min_by_key(|v| levenshtein(&v.to_lowercase(), &query)).ok_or("not match")?;
-        let path = alacritty_full_config_path();
-        let mut config = read_alacritty_config(&path)?;
-        config.set_font_family(font);
-        write_alacritty_config(path, &config)?;
     }
+
+    #[cfg(target_os = "linux")]
+    {
+        // TODO:
+        println!("list_nerd_fonts: not implemented for Linux");
+    }
+
+    fonts.sort();
+    fonts.dedup();
+    Ok(fonts)
+}
+
+fn set_alacritty_font(query: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let fonts = list_nerd_fonts()?;
+    if fonts.is_empty() {
+        return Err("No Nerd Fonts found on your system".into());
+    }
+
+    let query = query.to_lowercase();
+    let font = fonts
+        .iter()
+        .min_by_key(|v| levenshtein(&v.to_lowercase(), &query))
+        .ok_or_else(|| format!("No matching font found for query '{}'", query))?;
+
+    let path = home_path_join(ALACRITTY_CONFIG_FILE_PATH);
+    let mut config = load_alacritty_config(&path)?;
+    config.set_font_family(font);
+    save_alacritty_config(path, &config)?;
+
     Ok(())
 }
 
-/// theme changing utility
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    /// Set random theme
+#[derive(Parser)]
+#[command(
+    name = "tvibe",
+    version,
+    about = "Change your terminal theme and font easily.",
+    long_about = r#"Examples:
+    tvibe -t <query> -f <query> # set specific theme and font
+    tvibe -rdF                  # set rand dark theme and rand font"#
+)]
+struct Cli {
+    /// Apply theme by name (supports fuzzy matching)
+    #[arg(short, long)]
+    theme: Option<String>,
+
+    /// Apply a random theme
     #[arg(short, long)]
     rand: bool,
 
-    /// Set random light theme
+    /// When used with --rand or --theme-list, filters to dark themes
     #[arg(short, long)]
-    light_rand: bool,
+    dark: bool,
 
-    /// Set random dark theme
+    /// Filter to light themes
     #[arg(short, long)]
-    dark_rand: bool,
+    light: bool,
 
-    /// Search and apply theme
-    #[arg(short, long)]
-    query: Option<String>,
-
-    /// List of available themes
+    /// List available Nerd Fonts
     #[arg(long)]
-    list: bool,
+    theme_list: bool,
 
-    /// Change alacritty nerd font family
+    /// Set font family by name (supports fuzzy matching)
     #[arg(short, long)]
     font: Option<String>,
 
-    /// List of nerd font family
+    /// Pick a random Nerd Font
+    #[arg(short = 'F', long)]
+    font_rand: bool,
+
+    /// List available Nerd Fonts
     #[arg(long)]
     font_list: bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
+    let cli = Cli::parse();
 
-    let mut exit = false;
-    if args.list {
-        for i in collection::LIST {
-            println!("{}", i);
-        }
-        exit = true;
-    }
-    if args.font_list {
-        for i in nerd_font_list()? {
-            println!("{}", i);
-        }
-        exit = true;
-    }
-    if let Some(ref font) = args.font {
-        change_alacritty_font(font)?;
-        exit = true;
-    }
-
-    if exit {
-        return Ok(());
-    }
-
-    let mut theme = {
-        if args.rand {
-            if args.dark_rand {
-                collection::rand_dark()
-            } else if args.light_rand {
-                collection::rand_light()
-            } else {
-                collection::rand()
-            }
-        } else if args.dark_rand {
-            collection::rand_dark()
-        } else if args.light_rand {
-            collection::rand_light()
-        } else if !args.rand && args.query.is_some() {
-            collection::search(&unsafe { args.query.unwrap_unchecked() })
+    if cli.theme_list {
+        if cli.dark {
+            collection::DARK_LIST.iter().for_each(|i| println!("{i}"));
+        } else if cli.light {
+            collection::LIGHT_LIST.iter().for_each(|i| println!("{i}"));
         } else {
-            collection::rand()
+            collection::LIST.iter().for_each(|i| println!("{i}"));
         }
+    }
+    if cli.font_list {
+        list_nerd_fonts()?.iter().for_each(|i| println!("{i}"));
+    }
+    if let Some(query) = cli.font {
+        set_alacritty_font(&query)?;
+    } else if cli.font_rand {
+        set_alacritty_font(
+            list_nerd_fonts()?
+                .choose(&mut rand::rng())
+                .unwrap_or(&"".into()),
+        )?;
+    }
+    let theme = if let Some(query) = cli.theme {
+        Some(collection::search(&query))
+    } else if cli.rand {
+        if cli.dark {
+            Some(collection::rand_dark())
+        } else if cli.light {
+            Some(collection::rand_light())
+        } else {
+            Some(collection::rand())
+        }
+    } else {
+        None
     };
+    if let Some(mut theme) = theme {
+        theme.prepare()?;
+        // theme.validation()?;
 
-    theme.prepare()?;
-    // theme.validation()?;
+        apply_theme_to_nvim(&mut theme)?;
+        apply_theme_to_alacritty(&mut theme)?;
 
-    write_theme_to_nvim_config(&mut theme)?;
-    write_theme_to_alacritty_config(&mut theme)?;
-
-    println!("{}", theme.name.clone().unwrap_or_default());
+        println!("{}", theme.name.clone().unwrap_or_default());
+    }
 
     Ok(())
 }
